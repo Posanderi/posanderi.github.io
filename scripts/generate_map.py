@@ -15,7 +15,7 @@ ROOT_DIR = SCRIPT_DIR.parent
 CAM_POLY_PATH = os.path.join(ROOT_DIR, "data", "camera_polygons.gpkg")
 TIMESERIES_DIR = os.path.join(ROOT_DIR, "data", "timeseries")
 IMAGES_DIR = os.path.join(ROOT_DIR, "data", "camera_pictures")
-OUTPUT_HTML = os.path.join(ROOT_DIR, "web", "index.html")
+OUTPUT_HTML = os.path.join(ROOT_DIR, "docs", "index.html")
 
 
 def plot_timeseries(df):
