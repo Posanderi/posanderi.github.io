@@ -64,7 +64,7 @@ def run():
         if plot_b64:
             html += f"<img src='data:image/png;base64,{plot_b64}' width='300'><br>"
 
-        local_img = os.path.join(IMAGES_DIR, row["Kamera"], os.listdir(os.path.join(IMAGES_DIR, row["Kamera"]))[0])
+        local_img = os.path.join("data", "camera_pictures", row["Kamera"], os.listdir(os.path.join(IMAGES_DIR, row["Kamera"]))[0])
         html += f"<img src='{local_img}' width='300'><br>"
 
         iframe = folium.IFrame(html, width=440, height=330)
