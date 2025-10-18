@@ -64,8 +64,10 @@ def run():
         if plot_b64:
             html += f"<img src='data:image/png;base64,{plot_b64}' width='300'><br>"
 
-        local_img = os.path.join("data", "camera_pictures", row["Kamera"], os.listdir(os.path.join(IMAGES_DIR, row["Kamera"]))[0])
-        html += f"<img src='{local_img}' width='300'><br>"
+        camera_img_path = os.path.join(IMAGES_DIR, row["Kamera"], os.listdir(os.path.join(IMAGES_DIR, row["Kamera"]))[0])
+        with open(camera_img_path, "rb") as f:
+            camera_img_b64 = base64.b64encode(f.read()).decode()
+        html += f'<img src="data:image/jpg;base64,{camera_img_b64}" width="{300}">'
 
         iframe = folium.IFrame(html, width=440, height=330)
         popup = folium.Popup(iframe, max_width=520)
