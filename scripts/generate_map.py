@@ -18,7 +18,7 @@ ROOT_DIR = SCRIPT_DIR.parent
 CAM_POINT_PATH = os.path.join(ROOT_DIR, "data", "camera_locations.gpkg")
 CAM_POLY_PATH = os.path.join(ROOT_DIR, "data", "camera_polygons.gpkg")
 NDVI_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data", "s2_timeseries")
-GCC_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data","gcc_means")
+GCC_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data","gcc_timeseries")
 IMAGES_DIR = os.path.join(ROOT_DIR, "data", "camera_pictures")
 OUTPUT_HTML = os.path.join(ROOT_DIR, "docs", "index.html")
 
@@ -85,13 +85,13 @@ def run():
 
     for i, row in camera_points.iterrows():
         ndvi_ts_path = os.path.join(NDVI_TIMESERIES_DIR, f"{row['Kamera']}_ndvi.csv")
-        if not os.path.exists(ndvi_ts_path):
-            continue
+        #if not os.path.exists(ndvi_ts_path):
+        #    continue
         ndvi_ts_df = pd.read_csv(ndvi_ts_path)
 
         gcc_ts_path = os.path.join(GCC_TIMESERIES_DIR, f"{row["Kamera"]}.csv")
-        if not os.path.exists(gcc_ts_path):
-            continue
+        #if not os.path.exists(gcc_ts_path):
+        #    continue
         gcc_ts_df = pd.read_csv(gcc_ts_path)
 
         html=f"<b>{row['Kamera']}</b><br>"
