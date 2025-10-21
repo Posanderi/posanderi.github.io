@@ -13,7 +13,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent
 CAM_POLY_PATH = os.path.join(ROOT_DIR, "data", "camera_polygons.gpkg")
-OUTPUT_DIR = os.path.join(ROOT_DIR, "data", "s2_timeseries")
+OUTPUT_DIR = os.path.join(ROOT_DIR, "data", "timeseries")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
