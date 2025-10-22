@@ -17,7 +17,7 @@ OUTPUT_DIR = os.path.join(ROOT_DIR, "data", "s2_timeseries")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-START_DATE = "2025-01-01"
+START_DATE = "2025-03-01"
 END_DATE = datetime.now().strftime("%Y-%m-%d")
 
 

@@ -44,6 +44,7 @@ folder = 'C:\\Users\\kirsi\\Documents\\AmandaPHD\\Toukola\\' + cam
 
 #function to enhance the data so that it reads the temperature from cropped area, 
 def preprocess_for_ocr(pil_image):
+    
     # Crop only the small area where the temperature appears
     width, height = pil_image.size
     crop_box = (width * 0.7687, height * 0.969, width * 0.88, height)
