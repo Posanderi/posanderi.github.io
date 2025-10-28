@@ -79,3 +79,20 @@ def plot_plotly_timeseries(ndvi_ts, gcc_ts):
     fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False)
 
     return fig_html
+    
+def plot_temp_timeseries(temp_ts):
+    
+    import pandas as pd
+    import plotly as ply
+    import plotly.express as px
+    import plotly.graph_objects as go
+
+    temp_ts["date"] = pd.to_datetime(temp_ts["date"])
+
+    fig=go.Figure()
+
+    fig.add_trace(go.Scatter(x=temp_ts["date"], y=temp_ts["temperature"]))
+    fig.update_layout(autosize=False, width=450)
+    fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False)
+
+    return fig_html

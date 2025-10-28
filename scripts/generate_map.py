@@ -1,4 +1,4 @@
-from fig_scripts import plot_plotly_timeseries
+from fig_scripts import plot_plotly_timeseries, plot_temp_timeseries
 import folium
 import pandas as pd
 import geopandas as gpd
@@ -18,12 +18,14 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent
 
-CAM_POINT_PATH = os.path.join(ROOT_DIR, "data", "camera_locations.gpkg")
 CAM_POLY_PATH = os.path.join(ROOT_DIR, "data", "camera_polygons.gpkg")
 HELSINKI_POLY_PATH = os.path.join(ROOT_DIR, "data", "helsinki_poly", "helsinki_poly.shp")
+
 NDVI_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data", "s2_timeseries")
 GCC_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data","gcc_timeseries")
+TEMP_TIMESERIES_DIR = os.path.join(ROOT_DIR, "data","temp_timeseries")
 IMAGES_DIR = os.path.join(ROOT_DIR, "data", "camera_pictures")
+
 OUTPUT_HTML = os.path.join(ROOT_DIR, "docs", "index.html")
 
 
@@ -50,12 +52,29 @@ def run():
         'fillOpacity': 0.7,
         }
     ).add_to(m)
+    
+    helsinki_json=helsinki_poly.to_json()
+    
+    folium.GeoJson(data=helsinki_json,
+    color='gray', weight=3, fill=False
+    ).add_to(m)
+    
+    map_title = "Urban phenology research map"
+    title_html = f'<h1 style="font-size: 70px;position:absolute;border: 5px solid #000000;width:600px;z-index:100000;left:2vw;" >{map_title}</h1>'
+    m.get_root().html.add_child(folium.Element(title_html))
+    
+    map_subtitle = "What you are seeing here are the approximate locations of cameras used in my urban phenology-related Phd project! Click on the popup markers to view some cool information on the phenology of the camera location. For more information my work and research conducted at the TREE-D Lab research group at the University of Helsinki, please visit this website: <a href=https://www.helsinki.fi/en/researchgroups/tree-d-lab/people> https://www.helsinki.fi/en/researchgroups/tree-d-lab/people</a>"
+    
+    subtitle_html = f'<h2 style="font-size: 30px;width: 600px;position:absolute;z-index:100000;left:2vw;top:250px" >{map_subtitle}</h2>'
+    m.get_root().html.add_child(folium.Element(subtitle_html))
 
     #Add popup content for each of the cameras
     for i, row in camera_polys.iterrows():
-        
+                
         #Popup title
-        html=f"<h1>{row['Kamera']}</h1><br>"
+        
+        html=""
+        html+=f"<h1>{row['Kamera']}</h1>"
 
         #Example camera image
         camera_img_path = os.path.join(IMAGES_DIR, row["Kamera"], os.listdir(os.path.join(IMAGES_DIR, row["Kamera"]))[0])
@@ -77,6 +96,18 @@ def run():
         ply_fig_html = plot_plotly_timeseries(ndvi_ts_df, gcc_ts_df)
         if ply_fig_html:
             html += ply_fig_html
+            
+        #Temperature plot
+        temp_ts_path = os.path.join(TEMP_TIMESERIES_DIR, f"{row["Kamera"]}.csv")
+        if not os.path.exists(temp_ts_path):
+            continue
+        temp_ts_df = pd.read_csv(temp_ts_path)
+        temp_fig_html=plot_temp_timeseries(temp_ts_df)
+        if temp_fig_html:
+            html += temp_fig_html
+            
+        html+="</body> </html>"
+
 
         #Generate the popup window
         iframe = folium.IFrame(html, width=500, height=600)
