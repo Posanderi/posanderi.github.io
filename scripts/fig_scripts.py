@@ -75,8 +75,8 @@ def plot_plotly_timeseries(ndvi_ts, gcc_ts):
         fig.add_trace(go.Scatter(x=pivot_p90.index, y=pivot_p90[roi], name="GCC"))
 
 
-    fig.update_layout(autosize=False, width=450)
-    fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False)
+    fig.update_layout(autosize=True)
+    fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False, config={"responsive": True})
 
     return fig_html
     
@@ -92,7 +92,7 @@ def plot_temp_timeseries(temp_ts):
     fig=go.Figure()
 
     fig.add_trace(go.Scatter(x=temp_ts["date"], y=temp_ts["temperature"]))
-    fig.update_layout(autosize=False, width=450)
-    fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False)
+    fig.update_layout(autosize=True)
+    fig_html=fig.to_html(include_plotlyjs="cdn", full_html=False, config={"responsive": True})
 
     return fig_html

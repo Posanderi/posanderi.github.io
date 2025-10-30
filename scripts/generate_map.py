@@ -12,6 +12,8 @@ from shapely import Polygon
 from shapely.geometry import mapping
 import plotly.express as px
 import plotly.graph_objects as go
+from branca.element import Element
+
 
 from pathlib import Path
 
@@ -59,14 +61,135 @@ def run():
     color='gray', weight=3, fill=False
     ).add_to(m)
     
+    
     map_title = "Urban phenology research map"
-    title_html = f'<h1 style="font-size: 70px;position:absolute;border: 5px solid #000000;width:600px;z-index:100000;left:2vw;" >{map_title}</h1>'
+    
+    title_html = f"""
+    <div id=map-title style=
+    "font-size:2vw;
+    position: absolute;
+    top:1vw;
+    border: 0.5vw solid #000000;
+    width:30vw;
+    z-index:499;
+    left:2vw;
+    background-color:white;"
+    >{map_title}</div>
+    """
+    
     m.get_root().html.add_child(folium.Element(title_html))
     
     map_subtitle = "What you are seeing here are the approximate locations of cameras used in my urban phenology-related Phd project! Click on the popup markers to view some cool information on the phenology of the camera location. For more information my work and research conducted at the TREE-D Lab research group at the University of Helsinki, please visit this website: <a href=https://www.helsinki.fi/en/researchgroups/tree-d-lab/people> https://www.helsinki.fi/en/researchgroups/tree-d-lab/people</a>"
     
-    subtitle_html = f'<h2 style="font-size: 30px;width: 600px;position:absolute;z-index:100000;left:2vw;top:250px" >{map_subtitle}</h2>'
+    subtitle_html = f"""
+    <div id=map-subtitle style=
+    "font-size:1vw;
+    width: 30vw;
+    position:absolute;
+    z-index:499;
+    left:2vw;
+    top:7vw;"
+    >{map_subtitle}</div>
+    """
+    
     m.get_root().html.add_child(folium.Element(subtitle_html))
+    
+    center_popup_with_close_button = """
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.classList && node.classList.contains("leaflet-popup")) {
+                        const iframe = node.querySelector("iframe");
+                        if (!iframe) return;
+
+                        // Clone Leaflet's close button if it exists
+                        const closeBtn = node.querySelector(".leaflet-popup-close-button")?.cloneNode(true);
+
+                        // Create overlay container
+                        const overlay = document.createElement("div");
+                        overlay.id = "custom-popup-overlay";
+                        Object.assign(overlay.style, {
+                            position: "fixed",
+                            top: "0",
+                            left: "0",
+                            width: "100vw",
+                            height: "100vh",
+                            background: "rgba(0,0,0,0.5)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            zIndex: "9999"
+                        });
+
+                        // Create inner wrapper (for positioning iframe + button)
+                        const wrapper = document.createElement("div");
+                        Object.assign(wrapper.style, {
+                            position: "relative",
+                            display: "inline-block"
+                        });
+
+                        // Style and attach iframe
+                        Object.assign(iframe.style, {
+                            width: "60vw",
+                            height: "90vh",
+                            border: "none",
+                            background: "rgba(255, 255, 255, 1)",
+                            borderRadius: "1vw",
+                            boxShadow: "0 0 20px rgba(0,0,0,0.3)"
+                        });
+
+                        wrapper.appendChild(iframe);
+
+                        // If there was a close button, add it in the top-right corner
+                        if (closeBtn) {
+                            Object.assign(closeBtn.style, {
+                                position: "absolute",
+                                top: "10px",
+                                right: "20px",
+                                fontSize: "2rem",
+                                color: "white",
+                                background: "rgba(0,0,0,0.4)",
+                                borderRadius: "50%",
+                                width: "40px",
+                                height: "40px",
+                                textAlign: "center",
+                                lineHeight: "40px",
+                                textDecoration: "none",
+                                cursor: "pointer",
+                                zIndex: "10000"
+                            });
+                            wrapper.appendChild(closeBtn);
+                            closeBtn.addEventListener("click", function(e) {
+                                e.preventDefault();
+                                overlay.remove();
+                            });
+                        }
+
+                        overlay.appendChild(wrapper);
+                        document.body.appendChild(overlay);
+
+                        // Remove original popup node (to avoid duplicates)
+                        node.remove();
+
+                        // Optional: close when clicking outside the iframe
+                        overlay.addEventListener("click", function(e) {
+                            if (e.target === overlay) overlay.remove();
+                        });
+                    }
+                });
+            });
+        });
+
+        const popupPane = document.querySelector(".leaflet-popup-pane");
+        if (popupPane) observer.observe(popupPane, { childList: true });
+    });
+    </script>
+    """
+
+    m.get_root().html.add_child(Element(center_popup_with_close_button))
+
 
     #Add popup content for each of the cameras
     for i, row in camera_polys.iterrows():
@@ -106,8 +229,6 @@ def run():
         if temp_fig_html:
             html += temp_fig_html
             
-        html+="</body> </html>"
-
 
         #Generate the popup window
         iframe = folium.IFrame(html, width=500, height=600)
@@ -120,7 +241,7 @@ def run():
             radius=500,
             fill=True
         ).add_to(m)
-
+        
     m.save(OUTPUT_HTML)
     print(f"🌍 Map generated at {OUTPUT_HTML}")
 
